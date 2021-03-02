@@ -8,12 +8,14 @@ class Variable:
         self.creator = func
 
     def backward(self):
-        f = self.creator    # get function
-        if f in not None:
-            x = f.input    # get the input of the function
-            x.grad = f.backward(self.grad)    # call backward method of the function
-            x.backward()
+        funcs = [self.creator]
+        while funcs:
+            f = funcs.pop()
+            x, y = f.input, f.output
+            x.grad = f.backward(y.grad)
 
+            if f.creator is not None:
+                funcs.append(x.creator)
 
 
 class Function:
