@@ -1,6 +1,7 @@
 class Variable:
     def __init__(self, data):
         self.data = data
+        self.grad = None
 
 
 class Function:
@@ -8,13 +9,15 @@ class Function:
         x = input.data
         y = self.forward(x)    # forward method implements specific computation
         output = Variable(y)
+        self.input = input
         return output
 
     def forward(self, x):
         raise NotImplementedError()
 
+    def backward(self, gy):
+        raise NotImplementedError()
 
-class Square(Function):
-    def forward(self, x):
-        return x ** 2
+
+
 
