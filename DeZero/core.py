@@ -24,7 +24,7 @@ class Variable:
             x, y = f.input, f.output
             x.grad = f.backward(y.grad)
 
-            if f.creator is not None:
+            if x.creator is not None:
                 funcs.append(x.creator)
 
 
