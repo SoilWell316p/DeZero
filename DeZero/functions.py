@@ -1,7 +1,7 @@
 import numpy as np
-import DeZero
-from DeZero import cuda, utils
-from DeZero.core import Function, Variable, as_variable, as_array
+from DeZero.core import Function, Variable, as_array
+# from DeZero import cuda, utils
+# from DeZero.core import Function, Variable, as_variable, as_array
 
 
 class Exp(Function):
@@ -31,6 +31,6 @@ class Square(Function):
 
 def square(x):
     f = Square()
-    return Square(x)
+    return f(x)
 
 
