@@ -1,5 +1,12 @@
+import numpy as np
+
+
 class Variable:
     def __init__(self, data):
+        if data is not None:
+            if not isinstance(data, np.ndarray):
+                raise TypeError('{} if not supported'.format(type(data)))
+
         self.data = data
         self.grad = None
         self.creator = None
@@ -8,6 +15,9 @@ class Variable:
         self.creator = func
 
     def backward(self):
+        if self.grad is None:
+            self.grad = np.ones_like(self.data)
+
         funcs = [self.creator]
         while funcs:
             f = funcs.pop()
@@ -22,7 +32,7 @@ class Function:
     def __call__(self, input):
         x = input.data
         y = self.forward(x)    # forward method implements specific computation
-        output = Variable(y)
+        output = Variable(as_array(y))
         output.set_creator(self)
         self.input = input
         self.output = output
@@ -35,5 +45,8 @@ class Function:
         raise NotImplementedError()
 
 
-
+def as_array(x):
+    if np.isscalar(x):
+        return np.array(x)
+    return x
 

@@ -14,6 +14,11 @@ class Exp(Function):
         return gx
 
 
+def exp(x):
+    f = Exp()
+    return f(x)
+
+
 class Square(Function):
     def forward(self, x):
         return x ** 2
@@ -22,3 +27,10 @@ class Square(Function):
         x = self.input.data
         gx = 2 * x * gy
         return gx
+
+
+def square(x):
+    f = Square()
+    return Square(x)
+
+
