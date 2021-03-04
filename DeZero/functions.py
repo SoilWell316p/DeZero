@@ -34,3 +34,9 @@ def square(x):
     return f(x)
 
 
+class Add(Function):
+    def forward(self, xs):
+        x0, x1 = xs
+        y = x0 + x1
+        return (y,)
+
