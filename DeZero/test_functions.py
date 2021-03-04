@@ -28,6 +28,25 @@ class SquareTest(unittest.TestCase):
         self.assertTrue(flg)
 
 
+class AddTest(unittest.TestCase):
+    def test_backward(self):
+        x = Variable(np.array(3.0))
+        y = add(x, x)
+        y.backward()
+        self.assertEqual(y.data, 6.0)
+        self.assertEqual(x.grad, 2.0)
+
+    def test_repetitive_backward(self):
+        x = Variable(np.array(3.0))
+        y = add(x, x)
+        y.backward()
+        self.assertEqual(x.grad, 2.0)
+        x.cleargrad()
+        y = add(add(x, x), x)
+        y.backward()
+        self.assertEqual(x.grad, 3.0)
+
+
 def numerical_diff(x, f, eps=1e-4):
     x0 = Variable(x.data - eps)
     x1 = Variable(x.data + eps)

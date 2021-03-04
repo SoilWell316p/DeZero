@@ -27,10 +27,20 @@ class Variable:
                 gxs = (gxs,)
 
             for x, gx in zip(f.inputs, gxs):
-                x.grad = gx
+                if x.grad is None:
+                    x.grad = gx
+                else:
+                    x.grad = x.grad + gx
+                    # x.grad += gx
+                    # インプレース演算だと問題が起こる
+                    # インプレース演算では、コピーが生成されずメモリの値を直接上書きする
+                    # そのため、全てのパラメータで勾配が同じになってしまうという問題が生じる
 
                 if x.creator is not None:
                     funcs.append(x.creator)
+
+    def cleargrad(self):
+        self.grad = None
 
 
 class Function:
