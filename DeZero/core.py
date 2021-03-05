@@ -1,5 +1,6 @@
 import weakref
 import numpy as np
+import contextlib
 
 
 class Variable:
@@ -17,7 +18,7 @@ class Variable:
         self.creator = func
         self.generation = func.generation + 1
 
-    def backward(self):
+    def backward(self, retain_grad=False):
         if self.grad is None:
             self.grad = np.ones_like(self.data)
 
@@ -54,6 +55,10 @@ class Variable:
                 if x.creator is not None:
                     add_func(x.creator)
 
+            if not retain_grad:
+                for y in f.outputs:
+                    y().grad = None    # yはweakref
+
     def cleargrad(self):
         self.grad = None
 
@@ -81,8 +86,25 @@ class Function:
         raise NotImplementedError()
 
 
+class Config:
+    enable_backprop = True
+
+
 def as_array(x):
     if np.isscalar(x):
         return np.array(x)
     return x
 
+
+@contextlib.contextmanager
+def using_config(name, value):
+    old_value = getattr(Config, name)
+    setattr(Config, name, value)
+    try:
+        yield
+    finally:
+        setattr(Config, name, old_value)
+
+
+def no_grad():
+    return using_config('enable_backprop', False)
