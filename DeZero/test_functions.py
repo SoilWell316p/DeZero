@@ -47,6 +47,14 @@ class AddTest(unittest.TestCase):
         self.assertEqual(x.grad, 3.0)
 
 
+class MulTest(unittest.TestCase):
+    def test_forward(self):
+        a = Variable(np.array(3.0))
+        b = Variable(np.array(2.0))
+        y = a * b
+        self.assertEqual(y.data, 6.0)
+
+
 class CombinedFuncsTest(unittest.TestCase):
     def test_complicated_backward(self):
         x = Variable(np.array(2.0))
@@ -63,4 +71,5 @@ def numerical_diff(x, f, eps=1e-4):
     y0 = f(x0)
     y1 = f(x1)
     return (y1.data - y0.data) / (2 * eps)
+
 
