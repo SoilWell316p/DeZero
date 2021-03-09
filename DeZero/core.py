@@ -2,6 +2,8 @@ import weakref
 import numpy as np
 import contextlib
 
+from DeZero.functions import *
+
 
 class Variable:
     def __init__(self, data, name=None):
@@ -89,6 +91,10 @@ class Variable:
         return 'variable(' + p + ')'
 
 
+Variable.__mul__ = mul
+Variable.__add__ = add
+
+
 class Function:
     def __call__(self, *inputs):
         xs = [x.data for x in inputs]
@@ -134,3 +140,4 @@ def using_config(name, value):
 
 def no_grad():
     return using_config('enable_backprop', False)
+
