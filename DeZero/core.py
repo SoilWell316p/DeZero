@@ -92,12 +92,6 @@ class Variable:
         return 'variable(' + p + ')'
 
 
-Variable.__add__ = add
-Variable.__radd__ = add
-Variable.__mul__ = mul
-Variable.__rmul__ = mul
-
-
 class Function:
     def __call__(self, *inputs):
         inputs = [as_variable(x) for x in inputs]
