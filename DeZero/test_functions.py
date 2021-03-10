@@ -65,6 +65,15 @@ class CombinedFuncsTest(unittest.TestCase):
         self.assertEqual(x.grad, 64.0)
 
 
+class ComplexFuncTest(unittest.TestCase):
+    def test_sphere(self):
+        x = Variable(np.array(1.0))
+        y = Variable(np.array(1.0))
+        z = sphere(x, y)
+        z.backward()
+        self.assertEqual((x.grad, x.grad), (2.0, 2.0))
+
+
 def numerical_diff(x, f, eps=1e-4):
     x0 = Variable(x.data - eps)
     x1 = Variable(x.data + eps)
@@ -72,4 +81,8 @@ def numerical_diff(x, f, eps=1e-4):
     y1 = f(x1)
     return (y1.data - y0.data) / (2 * eps)
 
+
+def sphere(x, y):
+    z = x ** 2 + y ** 2
+    return z
 
