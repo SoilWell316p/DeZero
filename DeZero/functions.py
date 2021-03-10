@@ -64,12 +64,6 @@ def mul(x0, x1):
     return Mul()(x0, x1)
 
 
-Variable.__add__ = add
-Variable.__radd__ = add
-Variable.__mul__ = mul
-Variable.__rmul__ = mul
-
-
 class Neg(Function):
     def forward(self, x):
         return -x
@@ -80,9 +74,6 @@ class Neg(Function):
 
 def neg(x):
     return Neg()(x)
-
-
-Variable.__neg__ = neg
 
 
 class Sub(Function):
@@ -101,10 +92,6 @@ def sub(x0, x1):
 def rsub(x0, x1):
     x1 = as_array(x1)
     return Sub()(x1, x0)
-
-
-Variable.__sub__ = sub
-Variable.__rsub__ = rsub
 
 
 class Div(Function):
@@ -129,10 +116,6 @@ def rdiv(x0, x1):
     return Div()(x1, x0)
 
 
-Variable.__truediv__ = div
-Variable.__rtruediv__ = rdiv
-
-
 # 累乗の計算
 # 指数は定数として扱い、勾配は追跡しない
 class Pow(Function):
@@ -154,4 +137,14 @@ def pow(x, c):
     return Pow(c)(x)
 
 
-Variable.__pow__ = pow
+def setup_variable():
+    Variable.__add__ = add
+    Variable.__radd__ = add
+    Variable.__mul__ = mul
+    Variable.__rmul__ = mul
+    Variable.__neg__ = neg
+    Variable.__sub__ = sub
+    Variable.__rsub__ = rsub
+    Variable.__truediv__ = div
+    Variable.__rtruediv__ = rdiv
+    Variable.__pow__ = pow
