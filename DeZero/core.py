@@ -2,8 +2,6 @@ import weakref
 import numpy as np
 import contextlib
 
-from DeZero.functions import *
-
 
 class Variable:
     __array_priority__ = 200
@@ -33,7 +31,7 @@ class Variable:
         def add_func(f):
             if f not in seen_set:
                 funcs.append(f)
-                seen_set.append(f)
+                seen_set.add(f)
                 funcs.sort(key=lambda x: x.generation)
 
         add_func(self.creator)
