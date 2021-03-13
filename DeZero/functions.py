@@ -87,6 +87,7 @@ class Sub(Function):
 
 
 def sub(x0, x1):
+    x1 = as_array(x1)
     return Sub()(x0, x1)
 
 
