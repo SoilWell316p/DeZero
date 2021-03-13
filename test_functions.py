@@ -101,6 +101,44 @@ class OptimizationTest(unittest.TestCase):
         # 50000回回すと、誤差は10の-8乗以下になる
         self.assertEqual((round(x0.data, 8), round(x1.data, 8)), (1.0, 1.0))
 
+    def test_second_order_differentiation(self):
+        def f(x):
+            y = x ** 4 - 2 * x ** 2
+            return y
+
+        x = Variable(np.array(2.0))
+        y = f(x)
+        y.backward(create_graph=True)
+        self.assertEqual(x.grad.data, 24.0)
+
+        gx = x.grad
+        # 勾配が加算されないよう、リセットする
+        x.cleargrad()
+        gx.backward()
+        self.assertEqual(x.grad.data, 44.0)
+
+    def test_newton_method(self):
+        def f(x):
+            y = x ** 4 - 2 * x ** 2
+            return y
+
+        x = Variable(np.array(2.0))
+        iters = 10
+
+        for i in range(iters):
+            y = f(x)
+            x.cleargrad()
+            y.backward(create_graph=True)
+
+            gx = x.grad
+            x.cleargrad()
+            gx.backward()
+            gx2 = x.grad
+
+            x.data = x.data - gx.data / gx2.data
+
+        self.assertEqual(x.data, 1.0)
+
 
 def numerical_diff(x, f, eps=1e-4):
     x0 = Variable(x.data - eps)
