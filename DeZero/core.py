@@ -20,9 +20,10 @@ class Variable:
         self.creator = func
         self.generation = func.generation + 1
 
-    def backward(self, retain_grad=False):
+    def backward(self, retain_grad=False, create_graph=False):
         if self.grad is None:
-            self.grad = np.ones_like(self.data)
+            # self.grad = np.ones_like(self.data)
+            self.grad = Variable(np.ones_like(self.data))
 
         funcs = []
         seen_set = set()
@@ -40,22 +41,24 @@ class Variable:
             f = funcs.pop()
             # gys = [output.grad for output in f.outputs]
             gys = [output().grad for output in f.outputs]
-            gxs = f.backward(*gys)
-            if not isinstance(gxs, tuple):
-                gxs = (gxs,)
 
-            for x, gx in zip(f.inputs, gxs):
-                if x.grad is None:
-                    x.grad = gx
-                else:
-                    x.grad = x.grad + gx
-                    # x.grad += gx
-                    # インプレース演算だと問題が起こる
-                    # インプレース演算では、コピーが生成されずメモリの値を直接上書きする
-                    # そのため、全てのパラメータで勾配が同じになってしまうという問題が生じる
+            with using_config('enable_backprop', create_graph):
+                gxs = f.backward(*gys)
+                if not isinstance(gxs, tuple):
+                    gxs = (gxs,)
 
-                if x.creator is not None:
-                    add_func(x.creator)
+                for x, gx in zip(f.inputs, gxs):
+                    if x.grad is None:
+                        x.grad = gx
+                    else:
+                        x.grad = x.grad + gx
+                        # x.grad += gx
+                        # インプレース演算だと問題が起こる
+                        # インプレース演算では、コピーが生成されずメモリの値を直接上書きする
+                        # そのため、全てのパラメータで勾配が同じになってしまうという問題が生じる
+
+                    if x.creator is not None:
+                        add_func(x.creator)
 
             if not retain_grad:
                 for y in f.outputs:
@@ -113,6 +116,123 @@ class Function:
 
     def backward(self, gys):
         raise NotImplementedError()
+
+
+# 四則演算とオーバーロード
+class Add(Function):
+    def forward(self, x0, x1):
+        y = x0 + x1
+        return y
+
+    def backward(self, gy):
+        return gy, gy
+
+
+def add(x0, x1):
+    x1 = as_array(x1)
+    return Add()(x0, x1)
+
+
+class Mul(Function):
+    def forward(self, x0, x1):
+        y = x0 * x1
+        return y
+
+    def backward(self, gy):
+        x0, x1 = self.inputs
+        return gy * x1, gy * x0,
+
+
+def mul(x0, x1):
+    x1 = as_array(x1)
+    return Mul()(x0, x1)
+
+
+class Neg(Function):
+    def forward(self, x):
+        return -x
+
+    def backward(self, gy):
+        return -gy
+
+
+def neg(x):
+    return Neg()(x)
+
+
+class Sub(Function):
+    def forward(self, x0, x1):
+        y = x0 - x1
+        return y
+
+    def backward(self, gy):
+        return gy, -gy
+
+
+def sub(x0, x1):
+    x1 = as_array(x1)
+    return Sub()(x0, x1)
+
+
+def rsub(x0, x1):
+    x1 = as_array(x1)
+    return Sub()(x1, x0)
+
+
+class Div(Function):
+    def forward(self, x0, x1):
+        y = x0 / x1
+        return y
+
+    def backward(self, gy):
+        x0, x1 = self.inputs
+        gx0 = gy / x1
+        gx1 = gy * (-x0 / x1 ** 2)
+        return gx0, gx1
+
+
+def div(x0, x1):
+    x1 = as_array(x1)
+    return Div()(x0, x1)
+
+
+def rdiv(x0, x1):
+    x1 = as_array(x1)
+    return Div()(x1, x0)
+
+
+# 累乗の計算
+# 指数は定数として扱い、勾配は追跡しない
+class Pow(Function):
+    def __init__(self, c):
+        self.c = c
+
+    def forward(self, x):
+        y = x ** self.c
+        return y
+
+    def backward(self, gy):
+        x = self.inputs
+        c = self.c
+        gx = c * x ** (c - 1) * gy
+        return gx
+
+
+def pow(x, c):
+    return Pow(c)(x)
+
+
+def setup_variable():
+    Variable.__add__ = add
+    Variable.__radd__ = add
+    Variable.__mul__ = mul
+    Variable.__rmul__ = mul
+    Variable.__neg__ = neg
+    Variable.__sub__ = sub
+    Variable.__rsub__ = rsub
+    Variable.__truediv__ = div
+    Variable.__rtruediv__ = rdiv
+    Variable.__pow__ = pow
 
 
 class Config:
