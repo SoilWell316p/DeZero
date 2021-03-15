@@ -1,4 +1,4 @@
-import numpy as np
+import matplotlib.pyplot as plt
 import unittest
 
 from DeZero.core import *
@@ -138,6 +138,28 @@ class OptimizationTest(unittest.TestCase):
             x.data = x.data - gx.data / gx2.data
 
         self.assertEqual(x.data, 1.0)
+
+
+class HighDiffTest(unittest.TestCase):
+    def test_sin_differentiation(self):
+        x = Variable(np.linspace(-7, 7, 100))
+        y = sin(x)
+        y.backward(create_graph=True)
+
+        logs = [y.data.flatten()]
+
+        # 3階微分
+        for i in range(3):
+            logs.append(x.grad.data.flatten())
+            gx = x.grad
+            x.cleargrad()
+            gx.backward(create_graph=True)
+
+        labels = ["y=sin(x)", "y'", "y''", "y'''"]
+        for i, log in enumerate(logs):
+            plt.plot(x.data, log, label=labels[i])
+        plt.legend()
+        plt.show()
 
 
 def numerical_diff(x, f, eps=1e-4):
