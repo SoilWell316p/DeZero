@@ -2,6 +2,8 @@ import weakref
 import numpy as np
 import contextlib
 
+from DeZero import functions
+
 
 class Variable:
     __array_priority__ = 200
@@ -83,6 +85,10 @@ class Variable:
     def dtype(self):
         return self.data.dtype
 
+    @property
+    def T(self):
+        return functions.transpose(self)
+
     def __len__(self):
         return len(self.data)
 
@@ -91,6 +97,14 @@ class Variable:
             return 'variable(None)'
         p = str(self.data).replace('\n', '\n' + ' ' * 9)
         return 'variable(' + p + ')'
+
+    def reshape(self, *shape):
+        if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
+            shape = shape[0]
+        return functions.reshape(self, shape)
+
+    def transpose(self):
+        return functions.transpose(self)
 
 
 class Function:
