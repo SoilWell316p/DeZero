@@ -1,8 +1,7 @@
 import numpy as np
-from DeZero.core import Function, Variable, as_array
+from DeZero.core import Function, Variable, as_array, as_variable
 import math
 # from DeZero import cuda, utils
-# from DeZero.core import Function, Variable, as_variable, as_array
 
 
 class Exp(Function):
@@ -94,3 +93,34 @@ def my_sin(x, threshold=0.0001):
     return y
 
 
+class Reshape(Function):
+    def __init__(self, shape):
+        self.shape = shape
+
+    def forward(self, x):
+        self.x_shape = x.shape
+        y = x.reshape(self.shape)
+        return y
+
+    def backward(self, gy):
+        return reshape(gy, self.x_shape)
+
+
+def reshape(x, shape):
+    if x.shape == None:
+        return as_variable(x)
+    return Reshape(shape)(x)
+
+
+class Transpose(Function):
+    def forward(self, x):
+        y = np.transpose(x)
+        return y
+
+    def backward(self, gy):
+        gx = transpose(gy)
+        return gx
+
+
+def transpose(x):
+    return Transpose()(x)
