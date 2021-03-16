@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import unittest
-
-from DeZero.core import *
+from DeZero import Variable
 from DeZero.functions import *
 
 
@@ -160,6 +159,14 @@ class HighDiffTest(unittest.TestCase):
             plt.plot(x.data, log, label=labels[i])
         plt.legend()
         plt.show()
+
+
+class SumAndBroadcastTest(unittest.TestCase):
+    def test_sum(self):
+        x = Variable(np.array([1, 2, 3, 4, 5, 6]))
+        y = sum(x)
+        y.backward()
+        self.assertEqual(x.grad, 'variable([1 1 1 1 1 1])')
 
 
 def numerical_diff(x, f, eps=1e-4):

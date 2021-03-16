@@ -1,8 +1,7 @@
 import weakref
 import numpy as np
 import contextlib
-
-from DeZero import functions
+import DeZero
 
 
 class Variable:
@@ -87,7 +86,7 @@ class Variable:
 
     @property
     def T(self):
-        return functions.transpose(self)
+        return DeZero.functions.transpose(self)
 
     def __len__(self):
         return len(self.data)
@@ -101,10 +100,13 @@ class Variable:
     def reshape(self, *shape):
         if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
             shape = shape[0]
-        return functions.reshape(self, shape)
+        return DeZero.functions.reshape(self, shape)
 
     def transpose(self):
-        return functions.transpose(self)
+        return DeZero.functions.transpose(self)
+
+    def sum(self, axis=None, keepdims=False):
+        return DeZero.functions.sum(self, axis, keepdims)
 
 
 class Function:

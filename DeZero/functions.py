@@ -1,7 +1,8 @@
 import numpy as np
-from DeZero.core import Function, Variable, as_array, as_variable
 import math
-# from DeZero import cuda, utils
+import DeZero
+from DeZero import Function, Variable, as_variable, as_array
+from DeZero import utils
 
 
 class Exp(Function):
@@ -124,3 +125,23 @@ class Transpose(Function):
 
 def transpose(x):
     return Transpose()(x)
+
+
+class Sum(Function):
+    def __init__(self, axis, keepdims):
+        self.axis = axis
+        self.keepdims = keepdims
+
+    def forward(self, x):
+        self.x_shape = x.shape
+        y = x.sum(axis=self.axis, keepdims=self.keepdims)
+        return y
+
+    def backward(self, gy):
+        gy = utils.reshape_sum_backward(gy, self.x_shape, self.axis, self.keepdims)
+        gx = broadcast_to(gy, self.x_shape)
+        return gx
+
+
+def sum(x, axis=None, keepdims=False):
+    return Sum(axis, keepdims)(x)
