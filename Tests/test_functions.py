@@ -169,6 +169,16 @@ class SumAndBroadcastTest(unittest.TestCase):
         self.assertEqual(x.grad, 'variable([1 1 1 1 1 1])')
 
 
+class MatMulTest(unittest.TestCase):
+    def test_matmul(self):
+        x = Variable(np.random.randn(2, 3))
+        W = Variable(np.random.randn(3, 4))
+        y = matmul(x, W)
+        y.backward()
+        self.assertEqual(x.grad.shape, (2, 3))
+        self.assertEqual(W.grad.shape, (3, 4))
+
+
 def numerical_diff(x, f, eps=1e-4):
     x0 = Variable(x.data - eps)
     x1 = Variable(x.data + eps)
