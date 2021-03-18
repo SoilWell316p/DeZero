@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import unittest
+from DeZero.core import *
 from DeZero import Variable
 from DeZero.functions import *
 
@@ -9,14 +10,14 @@ class SquareTest(unittest.TestCase):
         x = Variable(np.array(2.0))
         y = square(x)
         expected = np.array(4.0)
-        self.assertEqual(y.data, expected)
+        self.assertEqual(y.data.data, expected)
 
     def test_backward(self):
         x = Variable(np.array(3.0))
         y = square(x)
         y.backward()
         expected = np.array(6.0)
-        self.assertEqual(x.grad, expected)
+        self.assertEqual(x.grad.data, expected)
 
     def test_gradient_check(self):
         x = Variable(np.random.rand(1))
@@ -33,17 +34,17 @@ class AddTest(unittest.TestCase):
         y = add(x, x)
         y.backward()
         self.assertEqual(y.data, 6.0)
-        self.assertEqual(x.grad, 2.0)
+        self.assertEqual(x.grad.data, 2.0)
 
     def test_repetitive_backward(self):
         x = Variable(np.array(3.0))
         y = add(x, x)
         y.backward()
-        self.assertEqual(x.grad, 2.0)
+        self.assertEqual(x.grad.data, 2.0)
         x.cleargrad()
         y = add(add(x, x), x)
         y.backward()
-        self.assertEqual(x.grad, 3.0)
+        self.assertEqual(x.grad.data, 3.0)
 
 
 class MulTest(unittest.TestCase):
@@ -61,7 +62,7 @@ class CombinedFuncsTest(unittest.TestCase):
         y = add(square(a), square(a))
         y.backward()
         self.assertEqual(y.data, 32.0)
-        self.assertEqual(x.grad, 64.0)
+        self.assertEqual(x.grad.data, 64.0)
 
 
 class ComplexFuncTest(unittest.TestCase):
