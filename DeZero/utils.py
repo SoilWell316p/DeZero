@@ -71,3 +71,16 @@ def plot_dot_graph(output, verbose=True, to_file='graph.png'):
     extension = os.path.splitext(to_file)[1][1:]
     cmd = 'dot {} -T {} -o {}'.format(graph_path, extension, to_file)
     subprocess.run(cmd, shell=True)
+
+
+def sum_to(x, shape):
+    ndim = len(shape)
+    lead = x.ndim - ndim
+    lead_axis = tuple(range(lead))
+
+    axis = tuple([i + lead for i, sx in enumerate(shape) if sx == 1])
+    y = x.sum(lead_axis + axis, keepdims=True)
+    if lead > 0:
+        y = y.squeeze(lead_axis)
+    return y
+
