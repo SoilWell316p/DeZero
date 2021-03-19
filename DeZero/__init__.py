@@ -6,5 +6,7 @@ from DeZero.core import as_array
 from DeZero.core import as_variable
 from DeZero.core import setup_variable
 from DeZero.core import Parameter
+from DeZero.layers import Layer
+from DeZero.models import Model
 
 setup_variable()
