@@ -1,5 +1,5 @@
 # DeZero
-'ゼロから作るDeep Learning3'を呼んで、DlフレームワークであるDeZeroを組み立ててみる。
+'ゼロから作るDeep Learning3'を読んで、深層学習フレームワークであるDeZeroを組み立ててみる。
 
 # References
 
