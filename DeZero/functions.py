@@ -1,7 +1,6 @@
 import numpy as np
 import math
-import DeZero
-from DeZero import Function, Variable, as_variable, as_array
+from DeZero import Function, as_variable, as_array
 from DeZero import utils
 
 
