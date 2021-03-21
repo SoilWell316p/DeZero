@@ -2,7 +2,6 @@ import weakref
 import numpy as np
 import contextlib
 import DeZero
-import DeZero.functions as F
 
 
 class Variable:
@@ -269,7 +268,7 @@ def setup_variable():
     Variable.__truediv__ = div
     Variable.__rtruediv__ = rdiv
     Variable.__pow__ = pow
-    Variable.__getitem__ = F.get_item
+    Variable.__getitem__ = DeZero.functions.get_item
 
 
 class Config:
