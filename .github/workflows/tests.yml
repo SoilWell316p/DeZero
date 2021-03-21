@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    stesp:
+    steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
@@ -13,4 +13,5 @@ jobs:
         architecture: 'x64'
     - name: unittest
       run: |
+        pip3 install numpy
         python3 -m unittest discover -v
