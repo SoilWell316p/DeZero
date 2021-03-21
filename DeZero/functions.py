@@ -289,3 +289,23 @@ class GetItemGrad(Function):
 
     def backward(self, ggx):
         return get_item(ggx, self.slices)
+
+
+def softmax_simple(x, axis=1):
+    x = as_variable(x)
+    y = exp(x)
+    sum_y = sum(y, axis=axis, keepdims=True)
+    return y / sum_y
+
+
+def softmax_cross_entropy_simple(x, t):
+    x, t = as_variable(x), as_variable(t)
+    N = x.shape[0]
+
+    p = as_array(softmax_simple(x))
+    p = np.clip(p, 1e-15, 1.0)
+    log_p = np.log(p)
+    tlog_p = log_p[np.arange(N), t.data]
+    y = -1 * np.sum(tlog_p) / N
+    return as_variable(y)
+
