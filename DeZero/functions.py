@@ -308,3 +308,4 @@ def softmax_cross_entropy_simple(x, t):
     y = -1 * np.sum(tlog_p) / N
     return as_variable(y)
 
+
