@@ -1,7 +1,7 @@
 import numpy as np
 import math
 from DeZero import Function, as_variable, as_array
-from DeZero import utils
+from DeZero import cuda, utils
 
 
 class Exp(Function):
@@ -255,6 +255,22 @@ def sigmoid_simple(x):
     x = as_variable(x)
     y = 1 / (1 + exp(-x))
     return y
+
+
+class Sigmoid(Function):
+    def forward(self, x):
+        xp = cuda.get_array_module(x)
+        y = xp.tanh(x * 0.5) * 0.5 + 0.5
+        return y
+
+    def backward(self, gy):
+        y = self.outputs[0]()
+        gx = gy * y * (1 - y)
+        return gx
+
+
+def sigmoid(x):
+    return Sigmoid()(x)
 
 
 class GetItem(Function):
