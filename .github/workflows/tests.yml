@@ -13,4 +13,5 @@ jobs:
         architecture: 'x64'
     - name: unittest
       run: |
+        pip3 install numpy
         python3 -m unittest discover -v
