@@ -17,5 +17,5 @@ z.backward()
 x.name = 'x'
 y.name = 'y'
 z.name = 'z'
-plot_dot_graph(z, verbose=False, to_file='../Graphs/goldstein.png')
+plot_dot_graph(z, verbose=False, to_file='goldstein.png')
 

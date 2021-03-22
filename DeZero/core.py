@@ -9,7 +9,7 @@ class Variable:
     def __init__(self, data, name=None):
         if data is not None:
             if not isinstance(data, np.ndarray):
-                raise TypeError('{} if not supported'.format(type(data)))
+                raise TypeError('{} is not supported'.format(type(data)))
 
         self.data = data
         self.name = name
@@ -117,7 +117,7 @@ class Function:
         ys = self.forward(*xs)
         if not isinstance(ys, tuple):
             ys = (ys,)
-        outputs = [Variable(as_array(y)) for y in ys]
+        outputs = [as_variable(as_array(y)) for y in ys]
 
         self.generation = max([x.generation for x in inputs])
         # 入力変数が複数ある場合、世代が最も大きいものをその関数の世代とする
