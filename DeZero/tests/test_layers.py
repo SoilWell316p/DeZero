@@ -4,7 +4,7 @@ from DeZero.core import Variable, Parameter
 from DeZero.layers import Layer
 
 
-class TestPlaneLayers(unittest.TestCase):
+class TestPlainLayers(unittest.TestCase):
     def test_simple_layer(self):
         layer = Layer()
 

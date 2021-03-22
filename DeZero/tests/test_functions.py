@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import unittest
 from DeZero.core import *
 from DeZero import Variable
@@ -24,7 +23,7 @@ class SquareTest(unittest.TestCase):
         y = square(x)
         y.backward()
         num_grad = numerical_diff(x, square)
-        flg = np.allclose(x.grad, num_grad)
+        flg = np.allclose(x.grad.data, num_grad)
         self.assertTrue(flg)
 
 
@@ -71,14 +70,14 @@ class ComplexFuncTest(unittest.TestCase):
         y = Variable(np.array(1.0))
         z = sphere(x, y)
         z.backward()
-        self.assertEqual((x.grad, x.grad), (2.0, 2.0))
+        self.assertEqual((x.grad.data, x.grad.data), (2.0, 2.0))
 
     def test_rosenbrock(self):
         x0 = Variable(np.array(0.0))
         x1 = Variable(np.array(2.0))
         y = rosenbrock(x0, x1)
         y.backward()
-        self.assertEqual(y.data, 0.0)
+        self.assertEqual(y.data, 401.0)
 
 
 class OptimizationTest(unittest.TestCase):
@@ -95,8 +94,8 @@ class OptimizationTest(unittest.TestCase):
             x1.cleargrad()
             y.backward()
 
-            x0.data = x0.data - lr * x0.grad
-            x1.data = x1.data - lr * x1.grad
+            x0.data = x0.data - lr * x0.grad.data
+            x1.data = x1.data - lr * x1.grad.data
 
         # 50000回回すと、誤差は10の-8乗以下になる
         self.assertEqual((round(x0.data, 8), round(x1.data, 8)), (1.0, 1.0))
@@ -140,34 +139,13 @@ class OptimizationTest(unittest.TestCase):
         self.assertEqual(x.data, 1.0)
 
 
-class HighDiffTest(unittest.TestCase):
-    def test_sin_differentiation(self):
-        x = Variable(np.linspace(-7, 7, 100))
-        y = sin(x)
-        y.backward(create_graph=True)
-
-        logs = [y.data.flatten()]
-
-        # 3階微分
-        for i in range(3):
-            logs.append(x.grad.data.flatten())
-            gx = x.grad
-            x.cleargrad()
-            gx.backward(create_graph=True)
-
-        labels = ["y=sin(x)", "y'", "y''", "y'''"]
-        for i, log in enumerate(logs):
-            plt.plot(x.data, log, label=labels[i])
-        plt.legend()
-        plt.show()
-
-
 class SumAndBroadcastTest(unittest.TestCase):
     def test_sum(self):
         x = Variable(np.array([1, 2, 3, 4, 5, 6]))
         y = sum(x)
         y.backward()
-        self.assertEqual(x.grad, 'variable([1 1 1 1 1 1])')
+        expected = [1, 1, 1, 1, 1, 1]
+        self.assertEqual(all(x.grad.data), all(expected))
 
 
 class MatMulTest(unittest.TestCase):
