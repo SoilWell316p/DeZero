@@ -8,5 +8,7 @@ from DeZero.core import setup_variable
 from DeZero.core import Parameter
 from DeZero.layers import Layer
 from DeZero.models import Model
+from DeZero.dataloaders import DataLoader
+
 
 setup_variable()
